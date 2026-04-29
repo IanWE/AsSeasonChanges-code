@@ -1,60 +1,87 @@
 # AsSeasonChanges-code
-This is the implementation for paper **As Seasons Change: Temporal Feature Powers Malware Classification**.
 
-## Directly-related Code
-If you only care about the core algorithm of this paper, see `core/moe/moe.py` and `core/nn.py` for implementation of G-MoE.py
+> **Implementation for paper:** > *As Seasons Change: Temporal Feature Powers Malware Classification*
 
-## Environments
-The code repository is build on a Ubuntu 24.04 with python 3.13.5.  
-All required packages are listed in `requirements.txt`; you can use `pip install -r requirements` to install them. For ember, you can install use `pip install git+https://github.com/elastic/ember.git`. After that, use `bash init.sh` to create the neccesary directories.
+---
 
-## Datasets
-Before starting the reproduction, please download the necessary datasets: [ANDROID](https://androzoo.uni.lu/),[EMBER](https://github.com/elastic/ember/), [Anoshif](https://github.com/bit-ml/AnoShift/tree/main) and [WildTime](https://github.com/huaxiuyao/Wild-Time). The meta information for the whole dataset `dataset/2024-GP1-meta.json` and hypercube dataset `dataset/hypercube_metadata.json` are shared while `dataset/proposed.json` include the family information prossed by euphony. You can directly use them. Note that when extracting DREBIN features, make sure the [baksmali](https://github.com/baksmali/smali/releases) is the newest version (we are using baksmali-2.5.2), otherwise, your extracted feature will loss large portion of features. We also shared the feature extraction code that we used in `feature-extraction/`
+## 🚀 Core Algorithm
+If you are primarily interested in the **G-MoE** implementation, please refer to:
+* `core/moe/moe.py`: Core MoE logic.
+* `core/nn.py`: Neural network architectures and G-MoE integration.
 
-Once you downloaded the dataset and extracted features, refer to `process_feature.ipynb` to process and save them, then you can use use `data_utils.load_gp_data(NAME)` or `data_utils.load_hypercube(NAME)` to load them. 
+---
 
-### Quick start
-You can also use datasets provided by other existing works (e.g., [Transcendent](https://github.com/s2labres/transcendent-release)) for evaluation. 
+## 🛠 Environments & Setup
 
-## Description of files
-There are four scripts you can directly use them to replicate the experimental results.
+The repository is built on **Ubuntu 24.04** with **Python 3.13.5**.
 
-`verify_negative_effect.py`: This is the script for verifying negative of old samples, it first train the model on the whole set and then gradually removing old samples year by year to verify the distribution conflict effect, you can select different datasets, models and feature types under the main function.
+1.  **Install dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    pip install git+[https://github.com/elastic/ember.git](https://github.com/elastic/ember.git)
+    ```
+2.  **Initialize directories:**
+    ```bash
+    bash init.sh
+    ```
 
-`next_year_prediction.py`: This is the script for the experiment of next year prediction, it first train the model on all sample before the testing year and then use the model predict the testing year.
+---
 
-`sustainability_verification.py`: This is the script for verifying the sustainability of different models, it will train the model on 2014 and use the model to predict samples in the next nine years. You can also modify it for different datasets, models and feature types.
+## 📊 Datasets
 
-`active_learning.py`: This is for verifying the effect on active learning. You can set up for different features/datasets in this file.
+### 1. Download Sources
+Before reproduction, please download the following datasets:
+* [ANDROID (AndroZoo)](https://androzoo.uni.lu/)
+* [EMBER](https://github.com/elastic/ember/)
+* [AnoShift](https://github.com/bit-ml/AnoShift/tree/main)
+* [WildTime](https://github.com/huaxiuyao/Wild-Time)
 
-`process_apigraph.py`: Code for processing DREBIN into APIGraph
+### 2. Metadata Information
+We provide pre-processed metadata in the `dataset/` directory:
+* `2024-GP1-meta.json`: Full dataset metadata.
+* `hypercube_metadata.json`: Hypercube dataset metadata.
+* `proposed.json`: Family information processed by **Euphony**.
 
-`process_data_bundle.py` and `process_data_bundle_original.py`: These are the files to process dataset using subspace compression with binarization (SCB).`process_data_bundle_original.py` allows you to process train and test set separately.
+### 3. Feature Extraction & Processing
+* **DREBIN Features:** Ensure you use the latest version of [baksmali](https://github.com/baksmali/smali/releases) (v2.5.2 recommended) to avoid significant feature loss.
+* **Extraction Code:** Located in `feature-extraction/`.
+* **Post-Processing:** Use `process_feature.ipynb` to process and save features.
+* **Loading Data:** Use `data_utils.load_gp_data(NAME)` or `data_utils.load_hypercube(NAME)`.
 
-`core/data_utils.py`: Code for loading datasets
+> [!TIP]
+> **Quick Start:** You can also use datasets provided by existing works like [Transcendent](https://github.com/s2labres/transcendent-release) for evaluation.
 
-`core/model_utils.py`: Code for train/save/load different models
+---
 
-`code/nn.py`: Model settings for training NN/G-MoE/T-MoE/MoE
+## 📂 File Descriptions
 
-`code/moe/*.py`: Code for G-MoE (`moe.py`), T-MoE (`moe_wg.py`) and MoE(`moe_o.py`)
+### Main Scripts
+| Script | Description |
+| :--- | :--- |
+| `verify_negative_effect.py` | Verifies the distribution conflict effect by gradually removing old samples. |
+| `next_year_prediction.py` | Trains on all data prior to the testing year to predict future samples. |
+| `sustainability_verification.py` | Evaluates model sustainability (Training on 2014, testing on the next 9 years). |
+| `active_learning.py` | Verifies effectiveness in an Active Learning context. |
 
-`utils.py`: Other helper functions
+### Data Processing
+* `process_apigraph.py`: Converts DREBIN features into **APIGraph** format.
+* `process_data_bundle.py`: Processes datasets using **Subspace Compression with Binarization (SCB)**.
+* `process_data_bundle_original.py`: Similar to above, but allows separate processing for train/test sets.
 
-### Testing on other datasets
-Before testing, please install the environments and download datasets for them first.
-`ember_verification.py`: Code for evaluation on EMBER dataset
+### Core Modules
+* `core/data_utils.py`: Dataset loading utilities.
+* `core/model_utils.py`: Utilities for training, saving, and loading models.
+* `code/nn.py`: Configurations for NN, G-MoE, T-MoE, and standard MoE.
+* `code/moe/`: Implementations of `G-MoE` (`moe.py`), `T-MoE` (`moe_wg.py`), and `MoE` (`moe_o.py`).
+* `utils.py`: Miscellaneous helper functions.
 
-`Anoshift/test_on_anoshift.py`: Code for testing G-MoE on AnoShift dataset
+---
 
-`Anoshift/kyoto.py`: G-MoE combined with deepSVDD.py
+## 🧪 Testing on Other Datasets
 
-`wildtime/wildtime.ipynb`: Testing G-MoE on wildtime datasets
+Ensure the environment and respective datasets are ready before running:
 
-
-
-
-
-
-
-
+* **EMBER:** `ember_verification.py`
+* **AnoShift:** `Anoshift/test_on_anoshift.py`
+* **Kyoto (G-MoE + DeepSVDD):** `Anoshift/kyoto.py`
+* **WildTime:** `wildtime/wildtime.ipynb` (Jupyter Notebook)
