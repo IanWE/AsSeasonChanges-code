@@ -1,0 +1,9 @@
+numpy
+pandas
+scikit-learn
+matplotlib
+scipy
+torch
+lightgbm
+lief
+tqdm
