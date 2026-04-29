@@ -73,7 +73,7 @@ We provide pre-processed metadata in the `dataset/` directory:
 * `core/model_utils.py`: Utilities for training, saving, and loading models.
 * `code/nn.py`: Configurations for NN, G-MoE, T-MoE, and standard MoE.
 * `code/moe/`: Implementations of `G-MoE` (`moe.py`), `T-MoE` (`moe_wg.py`), and `MoE` (`moe_o.py`).
-* `utils.py`: Miscellaneous helper functions.
+* `core/utils.py`: Miscellaneous helper functions.
 
 ---
 
