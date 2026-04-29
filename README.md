@@ -44,8 +44,7 @@ We provide pre-processed metadata in the `dataset/` directory:
 
 ### 3. Feature Extraction & Processing
 * **DREBIN Features:** Ensure you use the newer version of [baksmali](https://github.com/baksmali/smali/releases) (we are using v2.5.2) to avoid significant feature loss.
-* **Extraction Code:** Located in `feature-extraction/`.
-* **Post-Processing:** Use `process_feature.ipynb` to process and save features.
+* **Extraction Code:** Located in `feature-extraction/`. After processing, save them in the same format as in `data_utils.load_gp_data` and `data_utils.load_hypercube` for easy loading.
 * **Loading Data:** Use `data_utils.load_gp_data(NAME)` or `data_utils.load_hypercube(NAME)`.
 
 > [!TIP]
