@@ -6,8 +6,8 @@
 
 ## 🚀 Core Algorithm
 If you are primarily interested in the **G-MoE** implementation, please refer to:
-* `core/moe/moe.py`: Core MoE logic.
-* `core/nn.py`: Neural network architectures and G-MoE integration.
+* `core/moe/moe.py`: Core MoE architecture.
+* `core/nn.py`: Neural network architectures and G-MoE training settings.
 
 ---
 
@@ -31,7 +31,7 @@ The repository is built on **Ubuntu 24.04** with **Python 3.13.5**.
 
 ### 1. Download Sources
 Before reproduction, please download the following datasets:
-* [ANDROID (AndroZoo)](https://androzoo.uni.lu/)
+* [ANDROID (AndroZoo)](https://androzoo.uni.lu/) (Please download refer to sha256 list in `dataset/2024-GP1-meta.json`)
 * [EMBER](https://github.com/elastic/ember/)
 * [AnoShift](https://github.com/bit-ml/AnoShift/tree/main)
 * [WildTime](https://github.com/huaxiuyao/Wild-Time)
@@ -43,7 +43,7 @@ We provide pre-processed metadata in the `dataset/` directory:
 * `proposed.json`: Family information processed by **Euphony**.
 
 ### 3. Feature Extraction & Processing
-* **DREBIN Features:** Ensure you use the latest version of [baksmali](https://github.com/baksmali/smali/releases) (v2.5.2 recommended) to avoid significant feature loss.
+* **DREBIN Features:** Ensure you use the newer version of [baksmali](https://github.com/baksmali/smali/releases) (we are using v2.5.2) to avoid significant feature loss.
 * **Extraction Code:** Located in `feature-extraction/`.
 * **Post-Processing:** Use `process_feature.ipynb` to process and save features.
 * **Loading Data:** Use `data_utils.load_gp_data(NAME)` or `data_utils.load_hypercube(NAME)`.
