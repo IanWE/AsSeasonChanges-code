@@ -58,7 +58,7 @@ We provide pre-processed metadata in the `dataset/` directory:
 
 ### Scripts for Reproducing Main Experiments
 | Script | Description | Expected Results |
-| :--- | :--- |
+| :--- | :--- | :--- |
 | `verify_negative_effect.py` | Verifies the distribution conflict effect by gradually removing old samples (Figure 3). | Performance increase as gradually deleting old samples (For traditional models such as SVM and RF, a clear trend should be observed; for NN, the signal may be ambiguous, yet removing old samples should not degrade performance.)
 | `next_year_prediction.py` | Trains on all data prior to the testing year to predict future samples (Table 2). | G-MoE demonstrates better performance |
 | `sustainability_verification.py` | Evaluates model sustainability (Training on 2014, testing on the next 9 years, Table 4). | G-MoE demonstrates better performance |
