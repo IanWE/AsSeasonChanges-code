@@ -9,7 +9,7 @@ The code repository is build on a Ubuntu 24.04 with python 3.13.5.
 All required packages are listed in `requirements.txt`; you can use `pip install -r requirements` to install them. For ember, you can install use `pip install git+https://github.com/elastic/ember.git`. After that, use `bash init.sh` to create the neccesary directories.
 
 ## Datasets
-Before starting the reproduction, please download the necessary datasets: [ANDROID](https://androzoo.uni.lu/),[EMBER](https://github.com/elastic/ember/), [Anoshif](https://github.com/bit-ml/AnoShift/tree/main) and [WildTime](https://github.com/huaxiuyao/Wild-Time). The meta information for the whole dataset `dataset/2024-GP1-meta.json` and hypercube dataset `dataset/hypercube_metadata.json` are shared while `dataset/proposed.json` include the family information prossed by euphony. You can directly use them. Note that when extracting DREBIN features, make sure the [baksmali](https://github.com/baksmali/smali/releases) is the newest version (we are using baksmali-2.5.2), otherwise, your extracted feature will loss large portion of features. We also shared the feature extraction code that we used in `feature-extraction/`
+Before starting the reproduction, please download the necessary datasets: [ANDROID](https://androzoo.uni.lu/),[EMBER](https://github.com/elastic/ember/), [Anoshif](https://github.com/bit-ml/AnoShift/tree/main) and [WildTime](https://github.com/huaxiuyao/Wild-Time). The meta information for the whole dataset `dataset/2024-GP-meta.json` and hypercube dataset `dataset/hypercube_metadata.json` are shared while `dataset/proposed.json` include the family information prossed by euphony. You can directly use them. Note that when extracting DREBIN features, make sure the [baksmali](https://github.com/baksmali/smali/releases) is the newest version (we are using baksmali-2.5.2), otherwise, your extracted feature will loss large portion of features. We also shared the feature extraction code that we used in `feature-extraction/`
 
 Once you downloaded the dataset and extracted features, refer to `process_feature.ipynb` to process and save them, then you can use use `data_utils.load_gp_data(NAME)` or `data_utils.load_hypercube(NAME)` to load them. 
 
@@ -19,13 +19,13 @@ You can also use datasets provided by other existing works (e.g., [Transcendent]
 ## Description of files
 There are four scripts you can directly use them to replicate the experimental results.
 
-`verify_negative_effect.py`: This is the script for verifying negative of old samples, it first train the model on the whole set and then gradually removing old samples year by year to verify the distribution conflict effect, you can select different datasets, models and feature types under the main function.
+`verify_negative_effect.py`: This is the script for verifying negative of old samples, it first train the model on the whole set and then gradually removing old samples year by year to verify the distribution conflict effect, you can select different datasets, models and feature types under the main function.  Expected results: Performance increase with deleting old samples year by year.
 
-`next_year_prediction.py`: This is the script for the experiment of next year prediction, it first train the model on all sample before the testing year and then use the model predict the testing year.
+`next_year_prediction.py`: This is the script for the experiment of next year prediction, it first train the model on all sample before the testing year and then use the model predict the testing year. Expected results: G-MoE's performance is better than others.
 
-`sustainability_verification.py`: This is the script for verifying the sustainability of different models, it will train the model on 2014 and use the model to predict samples in the next nine years. You can also modify it for different datasets, models and feature types.
+`sustainability_verification.py`: This is the script for verifying the sustainability of different models, it will train the model on 2014 and use the model to predict samples in the next nine years. You can also modify it for different datasets, models and feature types. Expected results: G-MoE's performance is better than others.
 
-`active_learning.py`: This is for verifying the effect on active learning. You can set up for different features/datasets in this file.
+`active_learning.py`: This is for verifying the effect on active learning. You can set up for different features/datasets in this file. Expected results: G-MoE's performance is better than others.
 
 `process_apigraph.py`: Code for processing DREBIN into APIGraph
 
@@ -52,7 +52,8 @@ Before testing, please install the environments and download datasets for them f
 `wildtime/wildtime.ipynb`: Testing G-MoE on wildtime datasets
 
 
-
+### Reminder
+For binary classification tasks, we report F1 score of the positive class (average='binary'). For multi-class tasks, we report macro-averaged F1 (average='macro'). Please make it consistent when compared to other works.
 
 
 
