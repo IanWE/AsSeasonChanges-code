@@ -59,10 +59,10 @@ We provide pre-processed metadata in the `dataset/` directory:
 ### Scripts for Reproducing Main Experiments
 | Script | Description | Expected Results |
 | :--- | :--- | :--- |
-| `verify_negative_effect.py` | Verifies the distribution conflict effect by gradually removing old samples (Figure 3). | Performance gains from deleting old training samples
-| `next_year_prediction.py` | Trains on all data prior to the testing year to predict future samples (Table 2). | G-MoE demonstrates better performance |
-| `sustainability_verification.py` | Evaluates model sustainability (Training on 2014, testing on the next 9 years, Table 4). | G-MoE demonstrates better performance |
-| `active_learning.py` | Verifies effectiveness in an Active Learning context (Table 5). | G-MoE demonstrates better performance |
+| `verify_negative_effect.py` | Verifies the distribution conflict effect by gradually removing old samples (Figure 3). | Performance gains from deleting old training samples on most years|
+| `next_year_prediction.py` | Trains on all data prior to the testing year to predict future samples (Table 2). | G-MoE demonstrates better performance in general |
+| `sustainability_verification.py` | Evaluates model sustainability (Training on 2014, testing on the next 9 years, Table 4). | G-MoE demonstrates better performance in general |
+| `active_learning.py` | Verifies effectiveness in an Active Learning context (Table 5). | G-MoE demonstrates better performance in general |
 
 ### Data Processing
 * `process_apigraph.py`: Converts DREBIN features into **APIGraph** format.
