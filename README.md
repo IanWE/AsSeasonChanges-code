@@ -22,7 +22,6 @@ The repository is built on **Ubuntu 24.04** with **Python 3.13.5**.
 1.  **Install dependencies:**
     ```bash
     pip install -r requirements.txt
-    pip install git+[https://github.com/elastic/ember.git](https://github.com/elastic/ember.git)
     ```
 2.  **Initialize directories:**
     ```bash
@@ -65,8 +64,8 @@ We provide pre-processed metadata in the `dataset/` directory:
 | `active_learning.py` | Verifies effectiveness in an Active Learning context (Table 5). | G-MoE demonstrates better performance in general |
 
 ### Data Processing
-* `process_apigraph.py`: Converts DREBIN features into **APIGraph** format.
-* `process_data_bundle.py`: Processes datasets using **Subspace Compression with Binarization (SCB)**.
+* `process_apigraph.py`: Converts DREBIN features into **APIGraph** format (directly use it to get apigraph dataset).
+* `process_data_bundle.py`: Processes datasets using **Subspace Compression with Binarization (SCB)** (directly use it to get malscanscb dataset).
 * `process_data_bundle_original.py`: Similar to above, but allows separate processing for train/test sets.
 
 ### Core Modules
