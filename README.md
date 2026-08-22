@@ -54,6 +54,10 @@ We provide pre-processed metadata in the `dataset/` directory:
 ---
 
 ## 📂 File Descriptions
+### Data Processing
+* `process_apigraph.py`: Converts DREBIN features into **APIGraph** format (directly use it to get apigraph dataset).
+* `process_data_bundle.py`: Processes datasets using **Subspace Compression with Binarization (SCB)** (directly use it to get malscanscb dataset).
+* `process_data_bundle_original.py`: Similar to above, but allows separate processing for train/test sets.
 
 ### Scripts for Reproducing Main Experiments
 | Script | Description | Expected Results |
@@ -63,10 +67,10 @@ We provide pre-processed metadata in the `dataset/` directory:
 | `sustainability_verification.py` | Evaluates model sustainability (Training on 2014, testing on the next 9 years, Table 4). | G-MoE demonstrates better performance in general |
 | `active_learning.py` | Verifies effectiveness in an Active Learning context (Table 5). | G-MoE demonstrates better performance in general |
 
-### Data Processing
-* `process_apigraph.py`: Converts DREBIN features into **APIGraph** format (directly use it to get apigraph dataset).
-* `process_data_bundle.py`: Processes datasets using **Subspace Compression with Binarization (SCB)** (directly use it to get malscanscb dataset).
-* `process_data_bundle_original.py`: Similar to above, but allows separate processing for train/test sets.
+> [!TIP]
+> **Quick start:** Please run `python process_apigraph.py` and `python process_data_bundle.py` to generate the apigraph dataset and malscanscb datasets before running the above scripts. Alternatively, if you only need quick verification, you can modify the scripts by replacing the uncommented for‑loop with the existing for‑loop that traverses all datasets.
+
+
 
 ### Core Modules
 * `core/data_utils.py`: Dataset loading utilities.
