@@ -171,7 +171,7 @@ def compress_values(values,y_train,f,valueset,threshold,alpha=0):
         if sub in rule:
             rule[main].extend(rule[sub])
             del rule[sub]
-    print("After processing, feature "+str(f)+" has "+str(len(valueset))+" features left.")
+    print("After processing, feature "+str(f)+" has "+str(len(valueset))+" values left.")
     #for i in rule:
     #    for r in rule[i]:
     #        value_test[value_test==r] = i
@@ -263,9 +263,9 @@ def combine(tag,threshold,alpha,x_train,up,lp,valueset_list):
 
 if __name__ == '__main__':
     tag = "malscan"
+    X_train,y_train,t_disc,(shalist,_) = joblib.load(f"datasets/{tag}_gp.pkl")
     if not os.path.exists(f"materials/materials_{tag}_js.pkl"):
         #For easy usage, you can directly process the whole dataset.
-        X_train,y_train,t_disc,(shalist,_) = joblib.load(f"datasets/{tag}_gp.pkl")
         y_train = np.array(y_train)
         if tag=="malscan":
             selector = VarianceThreshold(threshold=0.001)
@@ -282,6 +282,6 @@ if __name__ == '__main__':
         y_train = np.asarray(y_train)
     for threshold in [0.01]:#[0.01,0.04,0.08,0.16]:
         x_train,y_train = combine(tag,threshold,0,X_train,up,lp,valueset_list)
-        joblib.dump([x_train,y_train,t_disc,(shalist,_)],"dataset/{tag}scb_gp.pkl")
+        joblib.dump([x_train,y_train,t_disc,(shalist,_)],f"datasets/{tag}scb_gp.pkl")
         #After processing, use data_utils.load_compressed_dataset(TAG,density,True) to load the processed dataset
     

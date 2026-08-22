@@ -30,7 +30,7 @@ class MOENet_wg(nn.Module):
         self.gate = nn.Sequential(
             nn.Linear(1, hidden), 
             nn.ReLU(),
-            nn.Linear(hidden, num_experts),  # 输入是最后一列的1个特征
+            nn.Linear(hidden, num_experts), 
         )
         self.fc = nn.Sequential(
             nn.Linear(hidden, hidden),

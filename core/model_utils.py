@@ -350,7 +350,7 @@ def train_rf(x_train, y_train, data_id='pdf'):
     :param data_id: (str) data id
     :return: trained Random Forest classifier
     """
-    if data_id == 'pdf':
+    if data_id != 'pdf':
         # The parameters are taken from
         # https://github.com/srndic/mimicus/blob/master/mimicus/classifiers/RandomForest.py
         model = RandomForestClassifier(

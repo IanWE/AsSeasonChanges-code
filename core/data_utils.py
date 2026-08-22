@@ -43,17 +43,17 @@ def load_drebin_features():
 
 # The whole dataset from 2014-2023
 def load_gp_dataset(dataset):
-    if dataset=="2024-GP1" or dataset=="2024-apigraph":
-        with open(f"./datasets/drebin/{dataset}-X.json", 'rb') as f:
+    if dataset=="2024-GP" or dataset=="2024-apigraph":
+        with open(f"./datasets/{dataset}-X.json", 'rb') as f:
             X = json.load(f)
             vec = DictVectorizer()
             X = vec.fit_transform(X)
-            dataset = "2024-GP1"
-        with open(f"./datasets/drebin/{dataset}-Y.json", 'r') as f:
+            dataset = "2024-GP"
+        with open(f"./datasets/{dataset}-Y.json", 'r') as f:
             y_o = json.load(f)
-        with open(f"./datasets/drebin/{dataset}-meta.json", 'r') as f:
+        with open(f"./datasets/{dataset}-meta.json", 'r') as f:
             T = json.load(f)
-        if dataset=="2024-GP1":
+        if dataset=="2024-GP":
             t_disc = np.array([datetime.strptime(o['discovery'][:10], '%Y-%m-%d') for o in T])
         else:
             T_ = [o['dex_date'] for o in T]
@@ -73,7 +73,7 @@ def load_gp_dataset(dataset):
         y = np.asarray(y_o)
         shalist = [o['sha256'] for o in T]
         return X,y,t_disc,(shalist,vec.get_feature_names_out())
-    elif 'mamadroid' in dataset or 'malscan' in dataset or "combined" in dataset or "downsampled" in dataset:
+    elif 'malscan' in dataset or "combined" in dataset or "downsampled" in dataset:
         return joblib.load(f"datasets/{dataset}_gp.pkl")
     else:
         raise Exception(f"Not found the dataset {dataset}")
@@ -83,14 +83,14 @@ def load_hypercube(feature):
     feature = feature.lower()
     # Load feature file, the originally shared hypercube dataset seems lacking part of features, so we use our re-extracted datasets
     if feature == 'drebin':
-        with open('datasets/hypercube/hypercube-v1.1/hypercube_drebin.json', 'r') as f:
+        with open('datasets/hypercube/hypercube_drebin.json', 'r') as f:
             all_features = json.load(f)
     elif feature in {'malscan', 'ramda'}:
-        feature_path = f'datasets/hypercube/hypercube-v1.1/hypercube_{feature}.pickle'
+        feature_path = f'datasets/hypercube/hypercube_{feature}.pickle'
         with open(feature_path, 'rb') as f:
             all_features = pickle.load(f)
     elif feature == 'apigraph':
-        X, y, t_disc, filtered_shas = joblib.load(f'datasets/hypercube/hypercube-v1.1/hypercube_{feature}.pkl')
+        X, y, t_disc, filtered_shas = joblib.load(f'datasets/hypercube/hypercube_{feature}.pkl')
         return X, y, t_disc, filtered_shas
     elif feature == 'concatenation':
         X, y, t_disc, filtered_shas = joblib.load(f'datasets/hypercube/concatenation.pkl')
@@ -98,7 +98,7 @@ def load_hypercube(feature):
     else:
         raise ValueError(f"Feature {feature} is not included")
     # Load metadata
-    with open('datasets/hypercube/hypercube-v1.1/hypercube_metadata.json', 'r') as f:
+    with open('datasets/hypercube/hypercube_metadata.json', 'r') as f:
         metadata = json.load(f)
     # Filter to samples that exist in both metadata and features
     filtered_shas = []

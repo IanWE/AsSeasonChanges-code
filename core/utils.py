@@ -30,6 +30,13 @@ from logger import logger
 if not os.path.exists("tmp/"):
     os.mkdir("tmp/")
 
+def aut_score(f1_list):
+    aut = 0
+    for i in range(len(f1_list)-1):
+        aut += (f1_list[i]+f1_list[i+1])/2
+    aut = aut/(len(f1_list)-1)
+    return aut
+
 def data_iter(batch_size, features, labels=None, shuffle=True): # Deal with sparse iter
     num_examples = features.shape[0]
     indices = list(range(num_examples))

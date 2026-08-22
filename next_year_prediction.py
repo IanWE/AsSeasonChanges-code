@@ -28,7 +28,7 @@ from sklearn.feature_extraction import FeatureHasher
 from process_data_bundle import preprocess,combine
 from sklearn.feature_selection import VarianceThreshold
 ff = open("results/next_year_prediction_gp.txt","a")
-ff.write("===================================================\n")
+ff.write("===========================================================================\n")
 ff.flush()
 
 import numpy as np
@@ -44,9 +44,9 @@ def evaluate(net,X_test,y_test_,x_val,y_val):
     print("F1:", final_f1)
     return iid_f1, final_f1
 
-dataset = "2024-GP1"#"2024-apigraph"#"2024-GP1"#'2024-mamadroid'
-for dataset in ['2024-GP1']:#combined
-    feat_type = "DENSE"
+#for dataset, feat_type in [('2024-GP',"DENSE")]: #use this to only verify on DENSE feature set
+
+for dataset, feat_type in [('2024-GP',"DENSE"),("2024-apigraph","APIGRAPH"),("malscanscb","malscanscb")]:
     data_id = dataset#"drebin"#"mamadroid"
     if feat_type not in ["HCC","TIF"]:
         X,y_o,t_disc,(shalist, features) = data_utils.load_gp_dataset(dataset)
@@ -54,11 +54,7 @@ for dataset in ['2024-GP1']:#combined
         dimension = X.shape[1]
     start = 2023
     end = 2014
-    #for fold in range(0,3):
-    fold = 0
-    alpha = 0
     for fold in range(3):
-        #for fold in [0,1,2]:
         for year in range(start,end,-1):
             if feat_type == "HCC":
                 X,y_o, t_disc, (shalist,features) = joblib.load(f"datasets/HCC/2014_{year}.pkl")
@@ -101,8 +97,7 @@ for dataset in ['2024-GP1']:#combined
                 X_test = [x_test[:,mask].toarray() for x_test in X_test_]
                 X_test = np.concatenate(X_test,axis=0)
                 y_test_ = np.concatenate(y_test_)
-            elif feat_type in ["HCC","mamadroid","malscanscb","mamadroidscb"] or "scb" in feat_type:
-                #get samples with 1% density
+            elif feat_type in ["HCC","malscanscb"] or "scb" in feat_type:
                 X_train = X_train_
                 X_test = np.concatenate(X_test_,axis=0)
                 y_test_ = np.concatenate(y_test_)
@@ -117,76 +112,54 @@ for dataset in ['2024-GP1']:#combined
                 y_test_ = np.concatenate(y_test_)
                 print(f"Selected features (variance > 0.003): {X_train.shape[1]}")
                 
-    
-            indicies = np.arange(X_train.shape[0])
-            from sklearn.model_selection import train_test_split
-            x_train_new, x_val, y_train_new, y_val, train_indicies, val_indicies = train_test_split(
-                X_train,          
-                y_train_,        
-                indicies,
-                test_size=0.1,  
-                random_state=0, 
-                shuffle=True   
-            )
-            print("Train shape:",x_train_new.shape)
             epoch = 150
-            method = ""# if "scb" not in data_id else "timedensity0"
-            if feat_type == "DENSE":
+            method = ""#"" if "scb" not in data_id else "timedensity0"
+            x_val, y_val = X_train,y_train_
+            
+            print("G-MOE")
+            if True:#not os.path.exists(f"models/moe_{year}_{fold}_{data_id}_{feat_type}.pkl"):
+                nn = model_utils.train_model('moe',data_id,X_train, y_train_, X_train, y_train_, epoch=epoch, method=method)
+                model_utils.save_model("moe", nn, "models/", f"moe_{year}_{fold}_{data_id}_{feat_type}")
+            else:
+                nn = model_utils.load_model("moe", data_id, "models/", f"moe_{year}_{fold}_{data_id}_{feat_type}", X_train.shape[1])
+            iid_f1, final_f1 = evaluate(nn,X_test,y_test_,x_val,y_val)
+            ff.write(f"Testing on {year} - G-MOE: IID F1 {iid_f1}, OOD F1 {final_f1} \n") 
+            ff.flush()
+            ff.write(f"============================= {fold}_{data_id}_{feat_type} =====================\n") 
+
+            #Ablation study!!
+            if dataset == "2024-GP" and feat_type == "DENSE" and False:
                 print("NN-time")
                 if not os.path.exists(f"models/nn_time_{year}_{fold}_{data_id}_{feat_type}.pkl"):
                     #nn = model_utils.train_model('nn',data_id,x_train_new, y_train_new, x_val, y_val, epoch=epoch, method=method)
                     nn = model_utils.train_model('nn',data_id,X_train, y_train_, X_train, y_train_, epoch=epoch, method=method)
                     model_utils.save_model("nn", nn, "models/", f"nn_time_{year}_{fold}_{data_id}_{feat_type}")
                 else:
-                    nn = model_utils.load_model("nn", data_id, "models/", f"nn_time_{year}_{fold}_{data_id}_{feat_type}",x_train_new.shape[1])
+                    nn = model_utils.load_model("nn", data_id, "models/", f"nn_time_{year}_{fold}_{data_id}_{feat_type}",X_train.shape[1])
                 iid_f1, final_f1 = evaluate(nn,X_test,y_test_,x_val,y_val)
                 ff.write(f"Testing on {year} - NN-time: IID F1 {iid_f1}, OOD F1 {final_f1} \n") 
                 ff.flush()
 
+                print("MoE without time")
                 if not os.path.exists(f"models/moe_o_{year}_{fold}_{data_id}_{feat_type}.pkl"):
                     nn = model_utils.train_model('moe_o',data_id,X_train[:,:-1], y_train_, X_train[:,:-1],y_train_, epoch=epoch, method=method)#IID
                     model_utils.save_model("moe", nn, "models/", f"moe_o_{year}_{fold}_{data_id}_{feat_type}")
                 else:
-                    nn = model_utils.load_model("moe_o", data_id, "models/",  f"moe_o_{year}_{fold}_{data_id}_{feat_type}", x_train_new[:,:-1].shape[1])
+                    nn = model_utils.load_model("moe_o", data_id, "models/",  f"moe_o_{year}_{fold}_{data_id}_{feat_type}", X_train[:,:-1].shape[1])
                 iid_f1, final_f1 = evaluate(nn,X_test[:,:-1],y_test_,x_val[:,:-1],y_val)
                 ff.write(f"Testing on {year} - MOE original time: IID F1 {iid_f1}, OOD F1 {final_f1} \n") 
                 ff.flush()
-                print("MOE original")
                 #
                 print("T-MOE")
                 if not os.path.exists(f"models/moe_wg_{year}_{fold}_{data_id}_{feat_type}.pkl"):
                     nn = model_utils.train_model('moe_wg',data_id,X_train, y_train_, X_train, y_train_, epoch=epoch, method=method)#IID
                     model_utils.save_model("moe", nn, "models/", f"moe_wg_{year}_{fold}_{data_id}_{feat_type}")
                 else:
-                    nn = model_utils.load_model("moe_wg", data_id, "models/",  f"moe_wg_{year}_{fold}_{data_id}_{feat_type}", x_train_new.shape[1])
+                    nn = model_utils.load_model("moe_wg", data_id, "models/",  f"moe_wg_{year}_{fold}_{data_id}_{feat_type}", X_train.shape[1])
                 iid_f1, final_f1 = evaluate(nn,X_test,y_test_,x_val,y_val)
                 ff.write(f"Testing on {year} - T-MOE: IID F1 {iid_f1}, OOD F1 {final_f1} \n") 
-                ff.write(f"========================================================================= {fold}_{data_id}_{feat_type}\n") 
                 ff.flush()
-
-            print("NN")
-            if not os.path.exists(f"models/nn_{year}_{fold}_{data_id}_{feat_type}.pkl"):
-                nn = model_utils.train_model('nn',data_id,X_train[:,:-1], y_train_, X_train[:,:-1],y_train_, epoch=epoch, method=method)#IID
-                model_utils.save_model("nn", nn, "models/", f"nn_{year}_{fold}_{data_id}_{feat_type}")
-            else:
-                nn = model_utils.load_model("nn", data_id, "models/",  f"nn_{year}_{fold}_{data_id}_{feat_type}", x_train[:,:-1].shape[1])
-            iid_f1, final_f1 = evaluate(nn,X_test[:,:-1],y_test_,x_val[:,:-1],y_val)
-            ff.write(f"Testing on {year} - NN: IID F1 {iid_f1}, OOD F1 {final_f1} \n") 
-            ff.flush()
-            
-            print("G-MOE")
-            if True:#not os.path.exists(f"models/moe_{year}_{fold}_{data_id}_{feat_type}.pkl"):
-                nn = model_utils.train_model('moe',data_id,X_train, y_train_, X_train, y_train_, epoch=epoch, method=method)#IID
-                model_utils.save_model("moe", nn, "models/", f"moe_{year}_{fold}_{data_id}_{feat_type}")
-            else:
-                nn = model_utils.load_model("moe", data_id, "models/", f"moe_{year}_{fold}_{data_id}_{feat_type}", x_train_new.shape[1])
-            iid_f1, final_f1 = evaluate(nn,X_test,y_test_,x_val,y_val)
-            ff.write(f"Testing on {year} {alpha} - G-MOE: IID F1 {iid_f1}, OOD F1 {final_f1} \n") 
-            ff.flush()
-    
-            #del X
             del X_train
             del X_test
-            del x_train_new
             import gc
             gc.collect()

@@ -49,8 +49,8 @@ apigraph_clustering_feature_fn = "datasets/method_cluster_mapping_2000.pkl"
 with open(apigraph_clustering_feature_fn, "rb") as f:
     apigraph_clustering_feature = pickle.load(f)
 
-dataset = "2024-GP1"
-with open(f"./datasets/drebin/{dataset}-X.json", 'rb') as f:
+dataset = "2024-GP"
+with open(f"./datasets/{dataset}-X.json", 'rb') as f:
     X = json.load(f)
 
 apigraph_features = []
@@ -65,5 +65,5 @@ for drebin_feature in tqdm(X):
             apigraph_feature[key] = 1 
     apigraph_features.append(apigraph_feature)
 
-json.dump(apigraph_features,open("datasets/drebin/2024-apigraph-X.json","w"))
+json.dump(apigraph_features,open("datasets/2024-apigraph-X.json","w"))
 

@@ -116,15 +116,12 @@ class MOENet(nn.Module):
         self.input_dim = input_dim
         self.output_dim = output_dim
         self.hidden = hidden
-        self.centers = nn.Parameter(torch.linspace(0,1,num_experts))  #use a fixed start point, not good
-        #self.centers = nn.Parameter(torch.randn(num_experts))
-        init = torch.full((num_experts,), 1.0)#1/2*num_experts)
-        #self.temprature = nn.Parameter(torch.tensor(0.1))
-        #self.register_buffer('log_sigma', torch.log(init))
+        self.centers = nn.Parameter(torch.linspace(0,1,num_experts)) 
+        init = torch.full((num_experts,), 1.0)
         self.log_sigma = nn.Parameter(torch.log(init))
         self.experts = nn.ModuleList([
             nn.Sequential(
-                nn.Linear(self.input_dim-1, hidden),#removing time feature from expert is better
+                nn.Linear(self.input_dim-1, hidden),
                 nn.ReLU(),
                 nn.BatchNorm1d(hidden),
                 torch.nn.Dropout(0.5),
@@ -139,41 +136,19 @@ class MOENet(nn.Module):
                 nn.Linear(hidden, output_dim),
             ) for _ in range(num_experts)
         ])
-        # 门控网络（使用最后一列特征作为输入） #考虑结合
         self.gate = nn.Sequential(
             nn.Linear(1, hidden),
             nn.ReLU(),
-            nn.Linear(hidden, num_experts),  #
-        )
-        self.fc = nn.Sequential(
-            nn.Linear(self.input_dim-1, hidden),#removing time feature from expert is better
-            nn.ReLU(),
-            nn.BatchNorm1d(hidden),
-            torch.nn.Dropout(0.5),
-            nn.Linear(hidden, hidden),
-            nn.ReLU(),
-            nn.BatchNorm1d(hidden),
-            torch.nn.Dropout(0.5),
-            nn.Linear(hidden, hidden),
-            nn.ReLU(),
-            nn.BatchNorm1d(hidden),
-            torch.nn.Dropout(0.5),
-            nn.Linear(hidden, output_dim),
+            nn.Linear(hidden, num_experts),  
         )
 
     def forward(self, x):
         timestamp = x[:, -1].unsqueeze(1) # (B,1)
-        #size = x[:, -2:]#.unsqueeze(1) # (B,1)
-        #market = x[:, -2:] # (B,1)
         centers = self.centers.unsqueeze(0)  # (1,N)
         B = x.size(0)
-        # 4) 计算 Gaussian 门控权重
-        #    w_ij = exp(- (t_j - c_i)^2 / (2σ^2) )
-        #route1 = F.softmax(self.gate(timestamp),dim=1)
-
         sigma = torch.exp(self.log_sigma).unsqueeze(0) #(1,N)
         numerator = timestamp - centers
-        route = torch.exp(- numerator.pow(2) / (2 * sigma.pow(2))) #/(sigma*torch.sqrt(2*torch.pi))  # (B, N)
+        route = torch.exp(- numerator.pow(2) / (2 * sigma.pow(2))) 
         expert_outputs = torch.stack([expert(x[:,:-1]) for expert in self.experts], dim=1)
         output = torch.einsum('be,beo->bo', route, expert_outputs)
         return output
@@ -245,8 +220,8 @@ if __name__ == "__main__":
     if model_id == "lightgbm" or model_id == 'nn':
         x_train, y_train, emberdf = data_utils.load_ember(dataset='emberall')
     elif model_id == "moe":
+        #Process the dataset using SCB
         x_train,y_train,emberdf = joblib.load("materials/processed_ember.pkl")
-        #Processed dataset using SCB
         t_disc = np.array(emberdf.appeared.tolist())
         t_disc[t_disc<"2017-01"] = "2017-01"#only few older samples, merge them into 2017
         t_disc = np.array([datetime.strptime(s, "%Y-%m") for s in t_disc])

@@ -57,7 +57,7 @@ class NN(object):
             return utils.predict(self.net, X)[:,1]
 
     def moepredict(self, X):
-        #enforce a difference for the outputed probs
+        #enforce a difference for the output probs
         net = self.net
         device = list(net.parameters())[0].device
         acc_sum, n = 0.0, 0
