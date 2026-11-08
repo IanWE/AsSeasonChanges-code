@@ -38,6 +38,7 @@ ff.write("===================================================\n")
 #dataset = "drebin"# apigraph
 #feat_type = "DENSE"# for malscanscb, just set as FULL
 metric = "uncertainty"
+SEED = 1
 
 for dataset,feat_type in [("drebin","DENSE")]:#evaluate on DENSE only
 #for dataset,feat_type in [("APIGRAPH","APIGRAPH"),("drebin","DENSE"),("malscanscb","malscanscb")]:#,("malscan","malscan"),("drebin","FULL")]:
@@ -125,7 +126,8 @@ for dataset,feat_type in [("drebin","DENSE")]:#evaluate on DENSE only
         if dataset == "malscan" and model_type != "rf":
             continue
         for COUNT in [50,100,200,400]:
-            random.seed(1)
+            random.seed(SEED)
+            np.random.seed(SEED)
             X_train = X_train_.copy()
             X_test = [x_test.copy() for x_test in X_test_]
             y_train = y_train_[:X_train_.shape[0]]
