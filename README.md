@@ -31,11 +31,12 @@ The repository is built on **Ubuntu 24.04** with **Python 3.13.5**.
 ---
 
 ## 📊 Datasets 
-If there are already datasets under `dataset/`, you can skip step 1, 2, 3. 
+Please download the extracted and processed features from [datasets](https://drive.google.com/file/d/18e4WA5fbIZySkBQMUhaZ1d3mu4T-wqAj/view?usp=sharing). You can also prepare your own datasets refer to step 1, 2, 3.
 
 ### 1. Download Sources
 Before reproduction, please download the following dataset:
 * [ANDROID (AndroZoo)](https://androzoo.uni.lu/) (Please download refer to sha256 list in `dataset/2024-GP-meta.json`)
+
 
 ### 2. Metadata Information
 We provide pre-processed metadata in the `dataset/` directory:
@@ -85,4 +86,5 @@ Ensure the corresponding environment and respective datasets are ready before ru
 * **[AnoShift](https://github.com/bit-ml/AnoShift/tree/main):** `Anoshift/test_on_anoshift.py`
 * **[Kyoto (G-MoE + DeepSVDD)](https://github.com/bit-ml/AnoShift/tree/main):** `Anoshift/kyoto.py`
 * **[WildTime](https://github.com/huaxiuyao/Wild-Time):** `wildtime/wildtime.ipynb`
+
 

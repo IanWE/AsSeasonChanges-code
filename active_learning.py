@@ -39,8 +39,8 @@ ff.write("===================================================\n")
 #feat_type = "DENSE"# for malscanscb, just set as FULL
 metric = "uncertainty"
 
-#for dataset,feat_type in [("drebin","DENSE")]:#evaluate on DENSE only
-for dataset,feat_type in [("APIGRAPH","APIGRAPH"),("drebin","DENSE"),("malscanscb","malscanscb")]:#,("malscan","malscan"),("drebin","FULL")]:
+for dataset,feat_type in [("drebin","DENSE")]:#evaluate on DENSE only
+#for dataset,feat_type in [("APIGRAPH","APIGRAPH"),("drebin","DENSE"),("malscanscb","malscanscb")]:#,("malscan","malscan"),("drebin","FULL")]:
     if dataset == "drebin":
         epoch = 100
         X, y, t_disc, filtered_shas = data_utils.load_hypercube(dataset)
@@ -125,7 +125,7 @@ for dataset,feat_type in [("APIGRAPH","APIGRAPH"),("drebin","DENSE"),("malscansc
         if dataset == "malscan" and model_type != "rf":
             continue
         for COUNT in [50,100,200,400]:
-            random.seed(0)
+            random.seed(1)
             X_train = X_train_.copy()
             X_test = [x_test.copy() for x_test in X_test_]
             y_train = y_train_[:X_train_.shape[0]]
@@ -140,7 +140,6 @@ for dataset,feat_type in [("APIGRAPH","APIGRAPH"),("drebin","DENSE"),("malscansc
                 for idx, dt in enumerate(t_tr):
                     month_key = f"{dt.year}-{dt.month:02d}"
                     month_indices[month_key].append(idx)
-                np.random.seed(42)
                 selected_idx = []
                 for month, idxs in month_indices.items():
                     if len(idxs) >= 400:
